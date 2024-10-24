@@ -112,7 +112,7 @@ body::before {
 }
 
 #game-end-link:hover {
-  background-color: var(--col-primary);
+  background-color: var(#518eda);
   box-shadow: 6px 6px 0 var(--col-shadow);
 }
 
