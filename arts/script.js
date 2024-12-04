@@ -28,7 +28,7 @@ async function fetchSheetData() {
                     card.style.gridRowEnd = `span ${rowsToSpan}`;
 
                     card.innerHTML = `
-                        <img src="${imageUrl}" alt="${author}" loading="lazy" onclick="openModal('${imageUrl}')">
+                        <img src="${imageUrl}" alt="${author}" onclick="openModal('${imageUrl}')">
                         <div class="card-footer">
                             ${
                                 authorLink && authorLink.trim() !== ""
