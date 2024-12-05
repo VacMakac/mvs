@@ -9,42 +9,56 @@ async function fetchSheetData() {
         const data = await response.json();
 
         if (data.values) {
-            data.values.forEach(row => {
-                const [imageUrl, author, authorLink] = row;
-
-                // Создаем новый объект изображения, чтобы узнать его размеры
-                const img = new Image();
-                img.src = imageUrl;
-
-                img.onload = () => {
-                    const ratio = img.width / img.height; // вычисляем соотношение сторон
-
-                    // Создание карточки
-                    const card = document.createElement("div");
-                    card.className = "card";
-
-                    // Устанавливаем gridRowEnd для карточки, чтобы она занимала нужное количество строк
-                    const rowsToSpan = Math.ceil( (1 / ratio) * 14 ); // Чем выше соотношение, тем меньше строк будет занимать карточка
-                    card.style.gridRowEnd = `span ${rowsToSpan}`;
-
-                    card.innerHTML = `
-                        <img src="${imageUrl}" alt="${author}" onclick="openModal('${imageUrl}')">
-                        <div class="card-footer">
-                            ${
-                                authorLink && authorLink.trim() !== ""
-                                ? `<a href="${authorLink}" target="_blank" rel="noopener noreferrer">${author}</a>`
-                                : `<span>${author}</span>`
-                            }
-                        </div>
-                    `;
-                    gallery.appendChild(card);
-                };
-            });
+            await loadImagesSequentially(data.values);
         } else {
             console.error("Нет данных в таблице или они не видимы для API.");
         }
     } catch (error) {
         console.error("Ошибка загрузки данных:", error);
+    }
+}
+
+// Функция последовательной загрузки изображений
+async function loadImagesSequentially(rows) {
+    for (const row of rows) {
+        const [imageUrl, author, authorLink] = row;
+
+        await new Promise((resolve) => {
+            const img = new Image();
+            img.src = imageUrl;
+
+            img.onload = () => {
+                const ratio = img.width / img.height;
+
+                // Создание карточки
+                const card = document.createElement("div");
+                card.className = "card";
+
+                const rowsToSpan = Math.ceil((1 / ratio) * 14);
+                card.style.gridRowEnd = `span ${rowsToSpan}`;
+
+                img.classList.add("loaded");
+
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${author}" onclick="openModal('${imageUrl}')">
+                    <div class="card-footer">
+                        ${
+                            authorLink && authorLink.trim() !== ""
+                                ? `<a href="${authorLink}" target="_blank" rel="noopener noreferrer">${author}</a>`
+                                : `<span>${author}</span>`
+                        }
+                    </div>
+                `;
+                document.getElementById("gallery").appendChild(card);
+
+                resolve(); // Разрешаем следующий шаг после загрузки изображения
+            };
+
+            img.onerror = () => {
+                console.error(`Ошибка загрузки изображения: ${imageUrl}`);
+                resolve(); // Продолжаем, даже если изображение не загрузилось
+            };
+        });
     }
 }
 
