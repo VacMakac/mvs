@@ -108,7 +108,7 @@ function renderTasks() {
     // Кнопка выполнения
     const completeButton = document.createElement("button");
     completeButton.className = "complete-button";
-    completeButton.innerHTML = `<img src="/ok.svg" alt="Выполнить">`;
+    completeButton.innerHTML = `<img src="/task/ok.svg" alt="Выполнить">`;
     completeButton.onclick = () => {
       title.style.textDecoration = "line-through";
       setBorderWithGlow(taskElement, "green");
@@ -122,7 +122,7 @@ function renderTasks() {
     // Кнопка удаления
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-button";
-    deleteButton.innerHTML = `<img src="/del.svg" alt="Удалить">`;
+    deleteButton.innerHTML = `<img src="/task/del.svg" alt="Удалить">`;
     deleteButton.onclick = () => {
       clearInterval(timerInterval); // Останавливаем таймер
       tasks.splice(index, 1);
